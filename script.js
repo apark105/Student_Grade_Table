@@ -12,6 +12,14 @@ $(document).ready(initializeApp);
  * Define all global variables here.  
  */
 var student_array = []; 
+var ajaxConfig = {
+      data: {api_key:'LTCfS9b4jQ'},
+      dataType:'json',
+      method: 'POST',
+      url: 'https://s-apis.learningfuze.com/sgt/get',
+      success: getData
+};
+$.ajax(ajaxConfig);
 
 
 
@@ -44,6 +52,7 @@ function initializeApp(){
 function addClickHandlersToElements(){
       $('#add-button').on('click', handleAddClicked);
       $('#cancel-button').on('click', handleCancelClick);
+      $('#get-data').on('click', getData)
 }
 
 /***************************************************************************************************
@@ -53,7 +62,6 @@ function addClickHandlersToElements(){
        none
  */
 function handleAddClicked(){
-      console.log('is this being clicked?')
       addStudent();
 }
 /***************************************************************************************************
@@ -64,7 +72,6 @@ function handleAddClicked(){
  */
 function handleCancelClick(){
       clearAddStudentFormInputs();
-      console.log('did the cancel button work?')
 }
 /***************************************************************************************************
  * addStudent - creates a student objects based on input fields in the form and adds the object to global student array
@@ -122,7 +129,7 @@ function renderStudentOnDom(student_object) {
  * @calls renderStudentOnDom, calculateGradeAverage, renderGradeAverage
  */
 function updateStudentList(student_array){
-      $('.tBody').text(''); 
+      $('.tBody').empty(); 
       for (var i=0; i < student_array.length; i++) {
             var student_object = student_array[i]
             renderStudentOnDom(student_object);
@@ -158,6 +165,20 @@ function renderGradeAverage(number){
       $('.avgGrade').text(number)
 }
 
+function getData(responseData) {
+      var ajaxConfig = {
+            data: {api_key:'LTCfS9b4jQ'},
+            dataType:'json',
+            method: 'POST',
+            url: 'https://s-apis.learningfuze.com/sgt/get',
+            success: function (responseData) {
+                  console.log(responseData);
+                  student_array = responseData.data
+                  updateStudentList(student_array);
+            }
+      }
+      $.ajax(ajaxConfig);
+}
 
 
 
