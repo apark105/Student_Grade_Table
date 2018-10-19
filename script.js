@@ -84,9 +84,9 @@ function addStudent(){
       var name = $('#studentName').val();
       var course = $('#course').val();
       var grade = $('#studentGrade').val();
-      var combineObj = {api_key:'LTCfS9b4jQ', 'name': name, 'course': course, 'grade': grade}
+      var combineObj = {'name': name, 'course': course, 'grade': grade}
       addStudentToDb(combineObj);
-      student_array.push({'name': name, 'course': course, 'grade': grade})
+      student_array.push(combineObj)
       updateStudentList(student_array);
       clearAddStudentFormInputs();
 }
@@ -169,20 +169,20 @@ function renderGradeAverage(number){
 
 function getData(responseData) {
       var ajaxConfig = {
-            data: {api_key:'LTCfS9b4jQ'},
+            data: {
+                  api_key:'LTCfS9b4jQ', 
+                  // 'force-failure': 'server'
+            },
             dataType:'json',
             method: 'POST',
             url: 'http://s-apis.learningfuze.com/sgt/get',
             success: function (responseData) {
                   console.log(responseData);
                   student_array = responseData.data
-                  if (responseData.success === false) {
-                        console.log('Is the False Being Read?');
-                        $('#error').click();
-                  }
-                  else {
-                        updateStudentList(student_array);
-                  }
+                  updateStudentList(student_array);
+            },
+            error: function (responseData) {
+                  console.log('is there an error?', responseData)
             }
       }
       $.ajax(ajaxConfig);
@@ -190,12 +190,23 @@ function getData(responseData) {
 
 function addStudentToDb(studentObj, responseData) {
       var ajaxConfig = {
-            data: studentObj,
+            data: {
+                  api_key:'LTCfS9b4jQ',
+                  name: studentObj.name,
+                  course: studentObj.course,
+                  grade: studentObj.grade,
+                  // 'force-failure': 'server'
+            },
             dataType:'json',
             method: 'POST',
             url: 'http://s-apis.learningfuze.com/sgt/create',
             success: function (responseData) {
                   console.log(responseData);
+            },
+            error: function (responseData) {
+                  console.log(responseData.statusText)
+                  var errorMsg = $('.errorBody').text(responseData.statusText);
+                  $('#error').modal('show');
             }
       }
       $.ajax(ajaxConfig);
