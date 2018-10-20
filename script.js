@@ -171,7 +171,7 @@ function getData(responseData) {
       var ajaxConfig = {
             data: {
                   api_key:'LTCfS9b4jQ', 
-                  // 'force-failure': 'server'
+                  'force-failure': 'timeout'
             },
             dataType:'json',
             method: 'POST',
@@ -183,6 +183,8 @@ function getData(responseData) {
             },
             error: function (responseData) {
                   console.log('is there an error?', responseData)
+                  var errorMsg = $('.errorBody').text(responseData.statusText);
+                  $('#error').modal('show');
             }
       }
       $.ajax(ajaxConfig);
