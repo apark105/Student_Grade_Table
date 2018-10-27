@@ -171,10 +171,11 @@ function getData(responseData) {
       var ajaxConfig = {
             data: {
                   api_key:'LTCfS9b4jQ', 
-                  'force-failure': 'timeout'
+                  // 'force-failure': 'timeout'
             },
             dataType:'json',
             method: 'POST',
+            // timeout: 5000,
             url: 'http://s-apis.learningfuze.com/sgt/get',
             success: function (responseData) {
                   console.log(responseData);
