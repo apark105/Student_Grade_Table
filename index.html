@@ -67,6 +67,7 @@
                 <th>Student Name</th>
                 <th>Student Course</th>
                 <th>Student Grade</th>
+                <th>Edit</th>
                 <th>Operations</th>
             </tr>
             </thead>
@@ -74,6 +75,52 @@
             </tbody>
         </table>
     </div>
+
+<!-- Modal -->
+<div id="updateModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">Update Information</h4>
+            </div>
+            <div class="modal-body">
+            <!-- only show this element when the isnt on mobile -->
+            <!-- only show this element when the user gets to a mobile version -->
+                <div class="student-add-form">
+                    <div class ="form-group input-group">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-user"></span>
+                        </span>
+                        <input type="text" class="form-control" name="studentName" id="studentNameModal" placeholder="Student Name" >
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-book"></span>
+                        </span>
+                        <input type="text" class="form-control" name="course" id="courseModal"
+                            placeholder="Student Course">
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-education"></span>
+                        </span>
+                        <input type="text" class="form-control" name="studentGrade" id="studentGradeModal"
+                            placeholder="Student Grade">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success " id='save-button'data-dismiss="modal">Save Changes</button>
+                <!-- <button type="button" class="btn btn-default" id='cancel-button'onclick="">Clear</button> -->
+                <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+            </div>
+    </div>
+
 </div>
+<!-- </div>
+</div> -->
 </body>
 </html>
