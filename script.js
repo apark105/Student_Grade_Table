@@ -13,10 +13,12 @@ $(document).ready(initializeApp);
  */
 var student_array = []; 
 var ajaxConfig = {
-      data: {api_key:'LTCfS9b4jQ'},
+      data: {
+            action:'read'
+      },
       dataType:'json',
       method: 'POST',
-      url: 'https://s-apis.learningfuze.com/sgt/get',
+      url: 'api/access.php',
       success: getData
 };
 $.ajax(ajaxConfig);
@@ -84,7 +86,7 @@ function addStudent(){
       var name = $('#studentName').val();
       var course = $('#course').val();
       var grade = $('#studentGrade').val();
-      var combineObj = {'name': name, 'course': course, 'grade': grade}
+      var combineObj = {'Student Name': name, 'Student Course': course, 'Student Grade': grade}
       addStudentToDb(combineObj);
       student_array.push(combineObj)
       updateStudentList(student_array);
@@ -104,9 +106,33 @@ function clearAddStudentFormInputs(){
  * @param {object} studentObj a single student object with course, name, and grade inside
  */
 function renderStudentOnDom(student_object) {
-      var studentName = $('<td>').append(student_object.name)
-      var studentCourse = $('<td>').append(student_object.course)
-      var studentGrade = $('<td>').append(student_object.grade)
+      var studentName = $('<td>').append(student_object['Student Name'])
+      var studentCourse = $('<td>').append(student_object['Student Course'])
+      var studentGrade = $('<td>').append(student_object['Student Grade'])
+      var editButton = $('<button>', {
+            text:'Edit', 
+            addClass: 'btn btn-warning btn-sm',
+            'data-toggle':"modal",
+            'data-target':"#updateModal",
+            on: {
+                  click: function() { 
+                        console.log(student_object['Student Name'])
+                        $('#studentNameModal').val(student_object['Student Name']);
+                        $('#courseModal').val(student_object['Student Course']);
+                        $('#studentGradeModal').val(student_object['Student Grade'])
+                        $('#save-button').click( function() {
+                              // console.log('does it wok');
+                              var name = $('#studentNameModal').val();
+                              var course = $('#courseModal').val();
+                              var grade = $('#studentGradeModal').val();
+                              var combineObj = {'Student Name': name, 'Student Course': course, 'Student Grade': grade, 'id': student_object['id']}
+                              updateStudentsDb(combineObj);
+                              getData()
+
+                        })
+                  }
+            } 
+      }); 
       var deleteButton = $('<button>', {
             text:'Delete', 
             addClass: 'btn btn-danger btn-sm',
@@ -120,8 +146,9 @@ function renderStudentOnDom(student_object) {
                   }
             } 
       });
+      var tdEditButton = $('<td>').append(editButton)
       var tdDeleteButton = $('<td>').append(deleteButton)
-      var combineStuff = $('<tr>').append(studentName, studentCourse, studentGrade, tdDeleteButton)
+      var combineStuff = $('<tr>').append(studentName, studentCourse, studentGrade,tdEditButton, tdDeleteButton)
       $('.tBody').append(combineStuff); 
 }
 
@@ -148,7 +175,7 @@ function updateStudentList(student_array){
 function calculateGradeAverage(student_array){
       var totalGrade = 0;
       for (var i=0; i<student_array.length; i++) {
-            totalGrade += parseFloat(student_array[i].grade);
+            totalGrade += parseFloat(student_array[i]['Student Grade']);
       }
       var averageGrade = (totalGrade/student_array.length)
       var fixedAvgGrade = parseInt(averageGrade) + '%'
@@ -167,16 +194,16 @@ function renderGradeAverage(number){
       $('.avgGrade').text(number)
 }
 
-function getData(responseData) {
+function getData() {
       var ajaxConfig = {
             data: {
-                  api_key:'LTCfS9b4jQ', 
+                  action:'read', 
                   // 'force-failure': 'timeout'
             },
             dataType:'json',
             method: 'POST',
             // timeout: 5000,
-            url: 'http://s-apis.learningfuze.com/sgt/get',
+            url: 'http://localhost:8888/access.php',
             success: function (responseData) {
                   console.log(responseData);
                   student_array = responseData.data
@@ -192,19 +219,20 @@ function getData(responseData) {
 }
 
 function addStudentToDb(studentObj, responseData) {
+      
       var ajaxConfig = {
             data: {
-                  api_key:'LTCfS9b4jQ',
-                  name: studentObj.name,
-                  course: studentObj.course,
-                  grade: studentObj.grade,
+                  action:'create',
+                  name: studentObj['Student Name'],
+                  course: studentObj['Student Course'],
+                  grade: studentObj['Student Grade'],
                   // 'force-failure': 'server'
             },
             dataType:'json',
             method: 'POST',
-            url: 'http://s-apis.learningfuze.com/sgt/create',
+            url: 'http://localhost:8888/access.php',
             success: function (responseData) {
-                  console.log(responseData);
+                  console.log('whats the data ',responseData);
             },
             error: function (responseData) {
                   console.log(responseData.statusText)
@@ -215,15 +243,36 @@ function addStudentToDb(studentObj, responseData) {
       $.ajax(ajaxConfig);
 }
 function delStudentDb(studentID, responseData) {
+      console.log('del student db', studentID);
       var ajaxConfig = {
-            data: {api_key:'LTCfS9b4jQ', student_id: studentID},
+            data: {action:'delete', id: studentID},
             dataType:'json',
             method: 'POST',
-            url: 'http://s-apis.learningfuze.com/sgt/delete',
+            url: 'http://localhost:8888/access.php',
             success: function (responseData) {
                   console.log(responseData);
             }
       }
       $.ajax(ajaxConfig);
+}
+
+function updateStudentsDb(studentObj){
+      var ajaxConfig = {
+            data: {
+                  action:'update', 
+                  id: studentObj['id'],
+                  name: studentObj['Student Name'],
+                  course: studentObj['Student Course'],
+                  grade: studentObj['Student Grade'],
+            },
+            dataType:'json',
+            method: 'POST',
+            url: 'http://localhost:8888/access.php',
+            success: function (responseData) {
+                  console.log('what is the response: ', responseData);
+            }
+      }
+      $.ajax(ajaxConfig);
+
 }
 
