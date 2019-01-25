@@ -292,11 +292,13 @@ function updateStudentsDb(studentObj){
             dataType:'json',
             method: 'POST',
             url: 'http://localhost:8888/access.php',
-            success: function (responseData) {
-                  console.log('what is the response: ', responseData);
-            }
+            // success: function (responseData) {
+            //       console.log('what is the response: ', responseData);
+            // }
       }
-      $.ajax(ajaxConfig);
+      $.ajax(ajaxConfig).then( function (responseData) {
+            return console.log('what is the response: ', responseData);
+      } );
 
 }
 
