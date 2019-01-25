@@ -11,6 +11,8 @@ $(document).ready(initializeApp);
 /**
  * Define all global variables here.  
  */
+
+var updateFlag = false; 
 var student_array = []; 
 var ajaxConfig = {
       data: {
@@ -55,8 +57,28 @@ function initializeApp(){
 function addClickHandlersToElements(){
       $('#add-button').on('click', handleAddClicked);
       $('#cancel-button').on('click', handleCancelClick);
+      // $('#save-button').on('click', handleSaveChanges);
       $('#get-data').on('click', getData)
 }
+
+function handleSaveChanges(student_object) {
+      
+      // if (updateFlag === false) {
+      //       updateFlag = true; 
+      //       return;
+      // } 
+      // updateFlag = false; 
+      var name = $('#studentNameModal').val();
+      var course = $('#courseModal').val();
+      var grade = $('#studentGradeModal').val();
+      var combineObj = {'Student Name': name, 'Student Course': course, 'Student Grade': grade, 'id': student_object['id']}
+      console.log('save button clicked', combineObj);
+      $('#save-button').off();
+      updateStudentsDb(combineObj);
+      getData();
+
+}
+
 
 /***************************************************************************************************
  * handleAddClicked - Event Handler when user clicks the add button
@@ -87,10 +109,10 @@ function addStudent(){
       var course = $('#course').val();
       var grade = $('#studentGrade').val();
       var combineObj = {'Student Name': name, 'Student Course': course, 'Student Grade': grade}
-      addStudentToDb(combineObj);
+      console.log('whats the return', addStudentToDb(combineObj));
       student_array.push(combineObj)
-      updateStudentList(student_array);
-      clearAddStudentFormInputs();
+      // updateStudentList(student_array);
+      // clearAddStudentFormInputs();
 }
 /***************************************************************************************************
  * clearAddStudentForm - clears out the form values based on inputIds variable
@@ -116,23 +138,19 @@ function renderStudentOnDom(student_object) {
             'data-target':"#updateModal",
             on: {
                   click: function() { 
-                        console.log(student_object['Student Name'])
+                        console.log('modal clicked', student_object)
                         $('#studentNameModal').val(student_object['Student Name']);
                         $('#courseModal').val(student_object['Student Course']);
                         $('#studentGradeModal').val(student_object['Student Grade'])
-                        $('#save-button').click( function() {
-                              // console.log('does it wok');
-                              var name = $('#studentNameModal').val();
-                              var course = $('#courseModal').val();
-                              var grade = $('#studentGradeModal').val();
-                              var combineObj = {'Student Name': name, 'Student Course': course, 'Student Grade': grade, 'id': student_object['id']}
-                              updateStudentsDb(combineObj);
-                              getData()
-
-                        })
+                        $('#save-button').on('click', ()=>  {
+                              handleSaveChanges(student_object)
+                              
+                        });
+                        // handleSaveChanges(student_object);                        
                   }
             } 
-      }); 
+      });
+
       var deleteButton = $('<button>', {
             text:'Delete', 
             addClass: 'btn btn-danger btn-sm',
@@ -194,7 +212,9 @@ function renderGradeAverage(number){
       $('.avgGrade').text(number)
 }
 
-function getData() {
+ function getData() {
+      // debugger;
+      console.log('get data fired?')
       var ajaxConfig = {
             data: {
                   action:'read', 
@@ -233,6 +253,10 @@ function addStudentToDb(studentObj, responseData) {
             url: 'http://localhost:8888/access.php',
             success: function (responseData) {
                   console.log('whats the data ',responseData);
+                  debugger;
+                  student_array[student_array.length - 1]['id'] = responseData.id;
+                  updateStudentList(student_array);
+                  clearAddStudentFormInputs();
             },
             error: function (responseData) {
                   console.log(responseData.statusText)
